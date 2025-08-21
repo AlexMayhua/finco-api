@@ -6,6 +6,7 @@ use App\Contracts\AuthServiceInterface;
 use App\Contracts\UserRepositoryInterface;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Validation\ValidationException;
 
 class AuthService implements AuthServiceInterface
 {
@@ -27,6 +28,25 @@ class AuthService implements AuthServiceInterface
 
         return [
             'user' => $user,
+            'token' => $token,
+            'token_type' => 'Bearer',
+        ];
+    }
+
+    public function login(array $credentials): array
+    {
+        $user = $this->users->findByEmail($credentials['email']);
+
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['Credenciales inválidas.'],
+            ]);
+        }
+
+        $token = $user->createToken('android')->plainTextToken;
+
+        return [
+            'user' => $user->load('profile'),
             'token' => $token,
             'token_type' => 'Bearer',
         ];
