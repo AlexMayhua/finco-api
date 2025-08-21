@@ -28,6 +28,7 @@ class AuthService implements AuthServiceInterface
         return [
             'user' => $user,
             'token' => $token,
+            'token_type' => 'Bearer',
         ];
     }
 }
