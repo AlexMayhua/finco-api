@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Contracts\ProfileServiceInterface;
 use App\Http\Requests\Profile\UpdateProfileRequest;
+use App\Support\ApiResponse;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -15,12 +17,20 @@ class ProfileController extends Controller
     public function me(Request $request): JsonResponse
     {
         $profile = $this->profileService->me($request->user());
-        return response()->json($profile);
+        $data = $profile->toArray();
+        if ($profile->profile_photo) {
+            $data['profile_photo_url'] = Storage::url($profile->profile_photo);
+        }
+        return ApiResponse::success($data, 'Perfil');
     }
 
     public function update(UpdateProfileRequest $request): JsonResponse
     {
         $profile = $this->profileService->update($request->user(), $request->validated());
-        return response()->json($profile);
+        $data = $profile->toArray();
+        if ($profile->profile_photo) {
+            $data['profile_photo_url'] = Storage::url($profile->profile_photo);
+        }
+        return ApiResponse::success($data, 'Perfil actualizado');
     }
 }
