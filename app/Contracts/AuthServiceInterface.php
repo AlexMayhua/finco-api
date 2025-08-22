@@ -8,4 +8,5 @@ interface AuthServiceInterface
 {
     public function register(array $payload): array;
     public function login(array $credentials): array;
+    public function logout(object $user, bool $allDevices = false): array;
 }
