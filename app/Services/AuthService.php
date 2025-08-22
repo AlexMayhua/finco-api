@@ -51,4 +51,18 @@ class AuthService implements AuthServiceInterface
             'token_type' => 'Bearer',
         ];
     }
+
+    public function logout(object $user, bool $allDevices = false): array
+    {
+        if ($allDevices) {
+            $user->tokens()->delete();
+        } else {
+            $token = $user->currentAccessToken();
+            if ($token) {
+                $token->delete();
+            }
+        }
+
+        return ['message' => $allDevices ? 'Sesión cerrada en todos los dispositivos.' : 'Sesión cerrada.'];
+    }
 }
