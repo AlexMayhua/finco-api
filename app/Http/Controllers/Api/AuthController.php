@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\LogoutRequest;
 use App\Contracts\AuthServiceInterface;
 
 class AuthController extends Controller
@@ -25,6 +26,15 @@ class AuthController extends Controller
 	{
 		return response()->json(
 			$this->authService->login($request->validated())
+		);
+	}
+
+	public function logout(LogoutRequest $request): JsonResponse
+	{
+		$data = $request->validated();
+		$allDevices = (bool)($data['all_devices'] ?? false);
+		return response()->json(
+			$this->authService->logout($request->user(), $allDevices)
 		);
 	}
 }
