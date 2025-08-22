@@ -9,6 +9,7 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\LogoutRequest;
 use App\Contracts\AuthServiceInterface;
+use App\Support\ApiResponse;
 
 class AuthController extends Controller
 {
@@ -16,16 +17,18 @@ class AuthController extends Controller
 
 	public function register(RegisterRequest $request): JsonResponse
 	{
-		return response()->json(
+		return ApiResponse::success(
 			$this->authService->register($request->validated()),
+			'Usuario registrado correctamente',
 			201
 		);
 	}
 
 	public function login(LoginRequest $request): JsonResponse
 	{
-		return response()->json(
-			$this->authService->login($request->validated())
+		return ApiResponse::success(
+			$this->authService->login($request->validated()),
+			'Inicio de sesión correcto'
 		);
 	}
 
@@ -33,8 +36,9 @@ class AuthController extends Controller
 	{
 		$data = $request->validated();
 		$allDevices = (bool)($data['all_devices'] ?? false);
-		return response()->json(
-			$this->authService->logout($request->user(), $allDevices)
+		return ApiResponse::success(
+			$this->authService->logout($request->user(), $allDevices),
+			$allDevices ? 'Sesión cerrada en todos los dispositivos.' : 'Sesión cerrada.'
 		);
 	}
 }
